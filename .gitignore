@@ -1,6 +1,8 @@
 .vscode/
 .idea/  
 
-./build/
-./dist/
-./__pycache__/
+__pycache__/
+.venv/
+
+build/
+dist/

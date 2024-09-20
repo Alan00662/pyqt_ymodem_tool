@@ -173,9 +173,9 @@ class YModem:
         self.ser = None
 
 
-if __name__ == '__main__':
-    y_mode = YModem()
-    y_mode.open('COM16', 420000)
-    y_mode.send(r'.\keil_app.bin')
-    y_mode.close()
+# if __name__ == '__main__':
+#     y_mode = YModem()
+#     y_mode.open('COM16', 420000)
+#     y_mode.send(r'.\keil_app.bin')
+#     y_mode.close()
 
