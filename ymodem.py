@@ -2,7 +2,9 @@ import os
 from serial import Serial
 
 
+
 class YModem:
+
     def __init__(self):
         self.ser = None
         self.EOT = b'\x04'
@@ -11,6 +13,7 @@ class YModem:
         self.CAN = b'\x18'
         self.CRC = b'\x43'
         self.ACK_FLAG = False
+
 
     @staticmethod
     def crc16(x, invert):
@@ -73,8 +76,10 @@ class YModem:
         self.ser.write(data)
         print('send first package success')
 
+
     def send_data(self, file_data, mode, package_count):
         print('start send file data')
+
         if mode == 128:
             x = 1
         else:
@@ -114,6 +119,7 @@ class YModem:
 
     def send_last(self, mode):
         print('send last data')
+
         if mode == 128:
             x = 1
         else:
@@ -171,6 +177,7 @@ class YModem:
     def close(self):
         self.ser.close()
         self.ser = None
+ 
 
 
 # if __name__ == '__main__':
