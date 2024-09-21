@@ -1,4 +1,4 @@
-('D:\\14.QTpython\\ymodem\\build\\main\\PYZ-00.pyz',
+('D:\\14.QTpython\\pyqt_ymodem_tool\\build\\main\\PYZ-00.pyz',
  [('PyQt5',
    'C:\\Users\\Admin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\PyQt5\\__init__.py',
    'PYMODULE'),
@@ -442,6 +442,14 @@
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\threading.py',
    'PYMODULE'),
+  ('tkinter',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\tkinter\\__init__.py',
+   'PYMODULE'),
+  ('tkinter.constants',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\tkinter\\constants.py',
+   'PYMODULE'),
   ('token',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\token.py',
@@ -466,7 +474,7 @@
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\urllib\\parse.py',
    'PYMODULE'),
-  ('ymodem', 'D:\\14.QTpython\\ymodem\\ymodem.py', 'PYMODULE'),
+  ('ymodem', 'D:\\14.QTpython\\pyqt_ymodem_tool\\ymodem.py', 'PYMODULE'),
   ('zipfile',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\zipfile.py',

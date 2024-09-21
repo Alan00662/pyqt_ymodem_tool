@@ -2,7 +2,6 @@ import os
 from serial import Serial
 
 
-
 class YModem:
 
     def __init__(self):
@@ -13,7 +12,6 @@ class YModem:
         self.CAN = b'\x18'
         self.CRC = b'\x43'
         self.ACK_FLAG = False
-
 
     @staticmethod
     def crc16(x, invert):
@@ -137,7 +135,7 @@ class YModem:
         print('send last error')
         return False
 
-    def send(self, file_path, mode=128):
+    def send(self, file_path, mode=1024): # mode=1024
         if not os.path.exists(file_path):
             print('file is not found')
             return False
@@ -183,6 +181,12 @@ class YModem:
 # if __name__ == '__main__':
 #     y_mode = YModem()
 #     y_mode.open('COM16', 420000)
+
 #     y_mode.send(r'.\keil_app.bin')
 #     y_mode.close()
 
+# if __name__ == '__main__':
+#     y_mode = YModem()
+#     y_mode.open('COM16', 921600)
+#     y_mode.send(r'.\KTH_JoyStick_CR_G031-halfdeadband_005.bin')
+#     y_mode.close()
