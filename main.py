@@ -29,6 +29,8 @@ class Worker(QObject):
     print_signal = pyqtSignal(str)
 
 class YModemUI(QMainWindow):
+
+
     def __init__(self):
         super().__init__()
 
@@ -38,6 +40,9 @@ class YModemUI(QMainWindow):
 
         self.initUI()
     def initUI(self):
+            # 线程锁
+        self.lock = threading.Lock()
+
         layout = QVBoxLayout()
 
         form_layout = QFormLayout()
@@ -129,14 +134,28 @@ class YModemUI(QMainWindow):
         threading.Thread(target=self.send_command, args=(port, baudrate)).start()
 
     def send_command(self, port, baudrate):
-        try:
-            with serial.Serial(port, baudrate, timeout=1) as ser:
-                # 发送16进制数
-                hex_data = bytes([0x60, 0xF1, 0x55, 0x55])
-                ser.write(hex_data)
-                print("The IAP upgrade command was sent successfully!")
-        except Exception as e:
-            print(f"发生错误: {e}")
+        with self.lock:  # 确保在一个时刻只有一个线程使用串口
+            try:
+                with serial.Serial(port, baudrate, timeout=1) as ser:
+                    if baudrate == 921600:  # GX12_Hall需要先发送 'serialpassthrough gimbals 921600' 指令        
+                        if self.stop_pulses(ser):  # 发送 'set pulses 0' 指令到串口，直到成功接收到 'set: pulses stop'
+                            if self.passthrough(ser):  # 发送 'serialpassthrough gimbals 921600' 指令到串口，直到成功接收到相同的回应
+                                # 发送 'iap upgrade' 指令到串口
+                                hex_data = bytes([0x60, 0xF1, 0x55, 0x55])
+                                ser.write(hex_data)
+                                print("The IAP upgrade command was sent successfully!")
+                            else:
+                                print("Failed to execute passthrough command.")
+                        else:
+                            print("Failed to stop pulses.")
+                    else:
+                            # 发送 'iap upgrade' 指令到串口
+                            # 发送16进制数
+                            hex_data = bytes([0x60, 0xF1, 0x55, 0x55])
+                            ser.write(hex_data)
+                            print("The IAP upgrade command was sent successfully!")
+            except Exception as e:
+                print(f"发生错误: {e}")
 
     def send_enter_command(self):
         port = self.port_input.currentText()  # 获取选中的串口
@@ -178,7 +197,7 @@ class YModemUI(QMainWindow):
 
         file_path = self.file_input.text()
 
-        print(baudrate)
+        print(f"baudrate is {baudrate}")
 
         if not file_path:
             print('Please select a file to send.')
@@ -192,6 +211,79 @@ class YModemUI(QMainWindow):
         finally:
             y_mode.close()
             print('File sent successfully!')
+
+    # stop_pulses 模块
+    def stop_pulses(self, ser):
+        '''发送 'set pulses 0' 指令到串口，直到成功接收到 'set: pulses stop'，最多重试 100 次'''
+        command = "set pulses 0\r\n"
+        expected_response = "set: pulses stop"
+        for attempt in range(25):
+            # self.connection.write(command.encode())
+
+            ser.write(command.encode())
+            print(command)
+            time.sleep(0.2)  # 等待回应
+            response = self.read_serial_response(ser, expected_response)  # 使用封装的方法读取响应
+            if response:
+                return True
+            print(f"Retry {attempt + 1}: Did not receive expected response, retrying...")
+        print("Can not stop pulses.")
+
+        return False  # 失败
+
+    # passthrough 模块
+    def passthrough(self, ser):
+        '''发送 'serialpassthrough gimbals 921600' 指令到串口，直到成功接收到相同的回应，最多重试 100 次'''
+        command = "serialpassthrough gimbals 921600\r\n"
+        expected_response = "> serialpassthrough gimbals 921600"
+    
+        for attempt in range(25):
+            # self.connection.write(command.encode())
+
+            ser.write(command.encode())
+            print(command)
+            time.sleep(0.2)  # 等待回应
+            response = self.read_serial_response(ser, expected_response)  # 使用封装的方法读取响应
+            if response:
+                return True
+            print(f"Retry {attempt + 1}: Did not receive expected response, retrying...")
+        print("Can not into passthrough mode.")
+
+        return False  
+            
+
+    def read_serial_response(self,ser, expected_response, timeout=1):
+        """读取串口数据直到得到预期回复或超时。"""
+        start_time = time.time()
+        response = ""
+
+        while True:
+            if ( time.time() - start_time ) > timeout:
+                print("读取超时！")
+                return None  # 超时处理
+            
+            if ser.in_waiting > 0:
+                response = ser.readline().decode().strip()
+                print(response)  # 打印串口收到的数据
+                if response == expected_response:
+                    return response  # 返回预期的回复
+                else:
+                    print("is not expected_response")
+        return None  # 返回None表示没有收到预期回复
+
+    def passthrough_test(self, port, baudrate):
+        with serial.Serial(port, baudrate, timeout=1) as ser:
+            command1 = "set pulses 0\r\n"
+            command2 = "serialpassthrough gimbals 921600\r\n"
+            ser.write(command1.encode())
+            print(command1)
+            time.sleep(0.5)  # 等待回应
+            ser.write(command2.encode())
+            print(command2)
+            time.sleep(0.5)  # 等待回应
+            hex_data = bytes([0x60, 0xF1, 0x55, 0x55])
+            ser.write(hex_data)
+            print("The IAP upgrade command was sent successfully!")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
